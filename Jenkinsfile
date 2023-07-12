@@ -4,25 +4,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([$class: 'GitSCM', branches: [[name: 'main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/DevOlabodeM/pytest-intro-vs-M']]])
             }
         }
-
         stage('Build') {
             steps {
-                sh 'docker build -t  .'
+                git branch: 'main', url: 'https://github.com/DevOlabodeM/pytest-intro-vs-M'
+                sh 'python3 ops.py'
             }
         }
-
         stage('Test') {
             steps {
-                sh 'docker run calculator_app python manage.py test'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'docker run -p 8000:8000 calculator_app'
+                sh 'python3 -m pytest'
             }
         }
     }
